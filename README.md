@@ -1,17 +1,19 @@
 # Sector Rotation Strategy with Machine Learning & MLOps Dashboard
 
-A machine learning-driven quantitative trading framework designed to implement an algorithmic sector rotation strategy across US sector ETFs (`XLK`, `XLF`, `XLV`, `XLE`, `XLI`, `XLP`, `XLY`, `XLU`, `XLB`, `XLRE`, `XLC`) using `yfinance`, with an interactive web-based MLOps dashboard powered by **FastAPI**, **Nginx**, and **Docker Compose**.
+A machine learning-driven quantitative trading framework designed to implement an algorithmic sector rotation strategy across US sector ETFs (`XLK`, `XLF`, `XLV`, `XLE`, `XLI`, `XLP`, `XLY`, `XLU`, `XLB`, `XLRE`, `XLC`) using `yfinance`,
+with an interactive web-based MLOps dashboard powered by **FastAPI**, **Nginx**, and **Docker**.
 
 [![Python 3.14](https://img.shields.io/badge/Python-3.14-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Backend-teal.svg)](https://fastapi.tiangolo.com/)
 [![LightGBM](https://img.shields.io/badge/LightGBM-Model-green.svg)](https://lightgbm.readthedocs.io/)
-[![Docker Compose](https://img.shields.io/badge/Docker%20Compose-Supported-blue)](https://www.docker.com/)
+[![Yandex Serverless Containers](https://img.shields.io/badge/Yandex-Serverless%20Containers-red.svg)](https://cloud.yandex.ru/)
 
 ---
 
 ## Project Overview
 
-The objective of this project is to build an end-to-end algorithmic trading workflow that dynamically rotates capital into the top-performing US economic sector ETFs based on Machine Learning predictions, managed via an intuitive modular web dashboard.
+The objective of this project is to build an end-to-end algorithmic trading workflow that dynamically rotates capital into the top-performing US economic sector ETFs based on Machine Learning predictions, managed via an intuitive modular
+web dashboard.
 
 ### Key Pipeline Components:
 1. **Data Ingestion**: Automated ingestion of historical daily market data via `yfinance` into Parquet and SQLite storage, complete with dataset preview and metadata summaries.
@@ -19,7 +21,7 @@ The objective of this project is to build an end-to-end algorithmic trading work
 3. **Machine Learning Modeling**: Predictive classification and regression models trained via time-series cross-validation (`TimeSeriesSplit`).
 4. **Signal Generation**: Top-K relative ranking algorithm selecting the top $K$ sectors for equal-weighted portfolio allocation, generating actionable trading recommendations.
 5. **Backtesting Engine**: Vectorized and event-driven backtesting simulating transaction fees, slippage, rebalancing frequency, and performance benchmarking against the broad S&P 500 index (`SPY`).
-6. **Automation & MLOps UI**: Modular web dashboard (`FastAPI` + `Nginx`) orchestrated via Docker Compose for seamless step-by-step pipeline execution and monitoring.
+6. **Automation & MLOps UI**: Modular web dashboard (`FastAPI` + `Nginx`) packaged into a single container for seamless step-by-step pipeline execution and monitoring.
 
 ---
 
@@ -40,24 +42,13 @@ flowchart TD
 ## Repository Structure
 
 ```text
-sector-rotation-ml/
+stock_markets_analytics_26/
 ├── .github/
 │   └── workflows/
 │       └── ci.yml                 # CI: Linting and pytest execution
-├── docker/
-│   └── Dockerfile                 # Backend containerization image
 ├── frontend/
 │   ├── index.html                 # Interactive MLOps web dashboard
 │   └── default.conf               # Nginx reverse proxy configuration
-├── data/                          # Data storage (gitignored)
-│   ├── raw/
-│   ├── processed/
-│   ├── analytics/
-│   ├── signals/
-│   └── backtests/
-├── models/                        # Saved machine learning artifacts (.joblib)
-├── notebooks/                     # Exploratory research and prototyping notebooks
-├── reports/                       # Visual plots and summary markdown reports
 ├── src/                           # Main source code package
 │   ├── config.py                  # Central settings and environment variables
 │   ├── data/                      # Ingestion module (ingest.py)
@@ -67,10 +58,14 @@ sector-rotation-ml/
 │   ├── backtest/                  # Simulation metrics and backtesters (simulator.py)
 │   ├── app/                       # FastAPI backend orchestrators (api.py)
 │   └── utils/                     # Database and file I/O utilities (io.py)
+├── data/                          # Data storage (gitignored)
+├── models/                        # Saved machine learning artifacts (.joblib)
+├── notebooks/                     # Exploratory research and prototyping notebooks
+├── reports/                       # Visual plots and summary markdown reports
 ├── tests/                         # Unit test suite
+├── Dockerfile                     # Single-container image (Nginx + FastAPI + entrypoint)
+├── entrypoint.sh                  # Container startup script for Nginx and FastAPI
 ├── Makefile                       # Command shortcut runners
-├── docker-compose.yml             # Multi-container orchestration (Nginx + FastAPI)
-├── pyproject.toml                 # Python package specifications and tool configs
 ├── requirements.txt               # Dependency list
 └── README.md                      # Project documentation
 ```
@@ -80,35 +75,26 @@ sector-rotation-ml/
 ### Prerequisites
 - **Python 3.14** or higher
 - **`uv`** (Fast Python package manager)
-- **Docker** & **Docker Compose** (Recommended for full MLOps UI deployment)
+- **Docker** (For local containerized deployment)
 
-
-### Option A: Running via Docker Compose (Recommended)
+### Option A: Running via Docker Container Locally 
 
 1. **Clone the repository:**
    ```bash
-   git clone https://gitlab.com/sma-zoomcamp-2026/stock_markets_analytics_2026.git
-   cd sma-zoomcamp-2026
+   git clone https://github.com/petr-akimov/stock_markets_analytics_26.git
+   cd stock_markets_analytics_26
    ```
 
-2. **Initialize Environment and Install Dependencies:**
-   ```bash
-   uv sync
-   ```
-
-3. **Configure Environment Variables:**
-   Copy the example environment template and adjust settings as needed:
-   ```bash
-   cp .env.example .env
-   ```
-
-4. **Start services with Docker Compose:**
+2. **Build the Docker image and Run the Container:**
 
 ```
-docker compose up --build -d
+docker build -t sector-ml-app:latest .
+docker run --rm -p 8080:8080 sector-ml-app:latest
 ```
 
-### Option B: Local CLI Setup
+Open http://localhost:8080 in your browser to access the interactive MLOps dashboard.
+
+### Option B: Cloud Deployment (Yandex Serverless Containers - Manual)
 
 1. **Clone the repository:**
    ```bash
