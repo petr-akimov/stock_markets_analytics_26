@@ -45,7 +45,7 @@ flowchart TD
 stock_markets_analytics_26/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml                 # CI: Linting and pytest execution
+│       └── deploy.yml                 # CI: Linting and pytest execution
 ├── frontend/
 │   ├── index.html                 # Interactive MLOps web dashboard
 │   └── default.conf               # Nginx reverse proxy configuration
@@ -60,9 +60,7 @@ stock_markets_analytics_26/
 │   └── utils/                     # Database and file I/O utilities (io.py)
 ├── data/                          # Data storage (gitignored)
 ├── models/                        # Saved machine learning artifacts (.joblib)
-├── notebooks/                     # Exploratory research and prototyping notebooks
 ├── reports/                       # Visual plots and summary markdown reports
-├── tests/                         # Unit test suite
 ├── Dockerfile                     # Single-container image (Nginx + FastAPI + entrypoint)
 ├── entrypoint.sh                  # Container startup script for Nginx and FastAPI
 ├── Makefile                       # Command shortcut runners
