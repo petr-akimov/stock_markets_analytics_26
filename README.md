@@ -158,5 +158,5 @@ Detailed performance reports, equity curves, and drawdown charts are saved under
 | **Data Transformations + EDA** | **2 / 2** | Unified dataset combining multi-source ETF prices, feature sets definition, technical indicators (`RSI`, `MACD`, `SMA`, `EMA`), and momentum/volatility metrics. |
 | **Modeling** | **2 / 2** | Supervised classification/regression models trained via Time-Series Cross-Validation (`TimeSeriesSplit`) with saved model artifacts in `models/`. |
 | **Trading Simulation** | **5 / 5** | Vectorized and simulation backtests computing CAGR (`13.88%`), Sharpe ratio (`0.80`), Max Drawdown (`-45.36%`), and performance benchmarking against `SPY`. |
-| **Automation & MLOps** | **3 / 3** | Modular `.py` scripts orchestrated via `Makefile`, FastAPI backend, and fully containerized multi-service deployment via `docker-compose.yml`. |
+| **Automation & MLOps** | **3 / 3** | Modular `.py` scripts orchestrated via `Makefile`, FastAPI backend, and fully containerized multi-service deployment both via Docker and Yandex Cloud`. |
 | **Bonus Points** | **5 / 5** | Production-ready clean modular architecture, interactive web-based MLOps dashboard (Nginx + FastAPI), rich execution summaries, and robust Serverless Container support in Yandex Cloud. |
