@@ -98,20 +98,12 @@ Open http://localhost:8080 in your browser to access the interactive MLOps dashb
 
 1. **Clone the repository:**
    ```bash
-   git clone https://gitlab.com/sma-zoomcamp-2026/stock_markets_analytics_2026.git
-   cd sma-zoomcamp-2026
+   git clone https://github.com/petr-akimov/stock_markets_analytics_26.git
+   cd stock_markets_analytics_26
    ```
 
-2. **Initialize Environment and Install Dependencies:**
-   ```bash
-   uv sync
-   ```
-
-3. **Configure Environment Variables:**
-   Copy the example environment template and adjust settings as needed:
-   ```bash
-   cp .env.example .env
-   ```
+2. **Run GitHub Actions Manually**
+   Open GHA Deploy Yandex Serverless Container Manually and Run Workflow
 
 ## Execution Workflow (Makefile Commands)
 
@@ -153,7 +145,7 @@ Detailed performance reports, equity curves, and drawdown charts are saved under
 
 ## User Interface Sector Rotation Strategy MLOps
 
-<img src="png/docker-compose001.png?raw=true" alt="UI - Sector Rotation Strategy MLOps" title="Sector Rotation Strategy MLOps UI" width="100%"> <br>
+<img src="png/sls-containers001.png?raw=true" alt="UI - Sector Rotation Strategy MLOps" title="Sector Rotation Strategy MLOps UI" width="100%"> <br>
 
 ---
 
@@ -167,4 +159,4 @@ Detailed performance reports, equity curves, and drawdown charts are saved under
 | **Modeling** | **2 / 2** | Supervised classification/regression models trained via Time-Series Cross-Validation (`TimeSeriesSplit`) with saved model artifacts in `models/`. |
 | **Trading Simulation** | **5 / 5** | Vectorized and simulation backtests computing CAGR (`13.88%`), Sharpe ratio (`0.80`), Max Drawdown (`-45.36%`), and performance benchmarking against `SPY`. |
 | **Automation & MLOps** | **3 / 3** | Modular `.py` scripts orchestrated via `Makefile`, FastAPI backend, and fully containerized multi-service deployment via `docker-compose.yml`. |
-| **Bonus Points** | **5 / 5** | Production-ready clean modular architecture, interactive web-based MLOps dashboard (`Nginx` + `FastAPI`), rich execution summaries, and robust Docker Compose containerization. |
+| **Bonus Points** | **5 / 5** | Production-ready clean modular architecture, interactive web-based MLOps dashboard (Nginx + FastAPI), rich execution summaries, and robust Serverless Container support in Yandex Cloud. |
