@@ -45,7 +45,13 @@ flowchart TD
 stock_markets_analytics_26/
 ├── .github/
 │   └── workflows/
-│       └── deploy.yml                 # CI: Linting and pytest execution
+│       └── deploy.ym              # CI: Deploy to Yandex Cloud Serverless Containers
+├── tf-bootstrap/                  # Terraform infrastructure provisioning
+│   ├── outputs.tf                 # Output variables (registry_id, sa_id)
+│   ├── provider.tf                # Yandex Cloud provider configuration
+│   ├── registry.tf                # Container Registry setup
+│   ├── sa.tf                      # Service accounts and IAM permissions
+│   └── variables.tf               # Input variable definitions
 ├── frontend/
 │   ├── index.html                 # Interactive MLOps web dashboard
 │   └── default.conf               # Nginx reverse proxy configuration
