@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sector Rotation MLOps Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; }
+        .container { max-width: 950px; margin: auto; background: #1e293b; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        h1 { color: #38bdf8; font-size: 24px; margin-bottom: 10px; }
+        p { color: #94a3b8; }
+        .button-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+        button { background: #0284c7; color: white; border: none; padding: 10px 18px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
+        button:hover { background: #0369a1; }
+        button.all { background: #10b981; }
+        button.all:hover { background: #059669; }
+        button:disabled { background: #475569; cursor: not-allowed; }
+        /* Увеличили высоту в 2 раза: с 400px до 800px */
+        pre { background: #090d16; color: #4ade80; padding: 15px; border-radius: 6px; overflow-x: auto; height: 800px; margin-top: 20px; font-family: monospace; border: 1px solid #334155; white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sector Rotation Strategy MLOps</h1>
+        <p>Modular machine learning pipeline management for US ETF sector rotation.</p>
+        
+        <div class="button-grid">
+            <button onclick="runStep('ingest', '1. Ingestion (Downloading data)')">1. Ingest</button>
+            <button onclick="runStep('features', '2. Feature Engineering (Calculating features)')">2. Features</button>
+            <button onclick="runStep('train', '3. Model Training (Training model)')">3. Train</button>
+            <button onclick="runStep('signals', '4. Signal Generation (Generating signals)')">4. Signals</button>
+            <button onclick="runStep('backtest', '5. Backtesting (Running strategy backtest)')">5. Backtest</button>
+            <button class="all" onclick="runStep('all', 'FULL PIPELINE (Running all stages)')">Run All</button>
+        </div>
+        
+        <pre id="output">Ready. Select a pipeline stage...</pre>
+    </div>
+
+    <script>
+        async function runStep(stepName, stepTitle) {
+            const buttons = document.querySelectorAll('button');
+            const output = document.getElementById('output');
+            
+            // Disable all buttons during execution
+            buttons.forEach(btn => btn.disabled = true);
+            output.innerText = `[RUNNING] Executing stage: ${stepTitle}...\n`;
+
+            const backendUrl = `/run/${stepName}`;
+
+            try {
+                const response = await fetch(backendUrl, {
+                    method: 'POST'
+                });
+
+                // Read response as text for safe debugging on error
+                const rawText = await response.text();
+                
+                let data;
+                try {
+                    data = JSON.parse(rawText);
+                } catch (e) {
+                    // Display raw response text (e.g. Nginx HTML error) if it's not valid JSON
+                    output.innerText += `\n[SERVER ERROR (NOT JSON)]:\n` + rawText;
+                    return;
+                }
+                
+                if (data.status === 'success') {
+                    output.innerText += `\n[SUCCESS: ${data.step}]\n` + data.output;
+                } else {
+                    output.innerText += `\n[ERROR: ${data.step}]\n` + data.output;
+                }
+            } catch (error) {
+                output.innerText += `\n[CRITICAL NETWORK ERROR]: ${error}`;
+            } finally {
+                // Re-enable buttons
+                buttons.forEach(btn => btn.disabled = false);
+            }
+        }
+    </script>
+</body>
+</html>

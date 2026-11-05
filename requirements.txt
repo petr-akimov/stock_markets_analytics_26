@@ -1,0 +1,21 @@
+# Core Data & Math
+pandas>=2.2.0
+numpy>=1.26.0
+pyarrow>=26.0.0
+
+# Financial Indicators & ML (только используемый LightGBM)
+ta>=0.11.0
+scikit-learn>=1.5.0
+lightgbm>=4.3.0
+
+# Data Ingestion & Storage
+yfinance>=0.2.36
+SQLAlchemy>=2.0.29
+
+# API & Framework Utilities
+fastapi>=0.110.0
+uvicorn>=0.28.0
+python-dotenv>=1.0.1
+typer>=0.9.0
+pydantic>=2.6.0
+joblib>=1.3.0

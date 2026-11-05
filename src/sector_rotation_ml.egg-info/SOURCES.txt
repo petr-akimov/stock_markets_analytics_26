@@ -1,0 +1,14 @@
+README.md
+pyproject.toml
+src/app/run_daily_pipeline.py
+src/backtest/simulator.py
+src/data/ingest.py
+src/features/build_features.py
+src/models/train.py
+src/sector_rotation_ml.egg-info/PKG-INFO
+src/sector_rotation_ml.egg-info/SOURCES.txt
+src/sector_rotation_ml.egg-info/dependency_links.txt
+src/sector_rotation_ml.egg-info/requires.txt
+src/sector_rotation_ml.egg-info/top_level.txt
+src/strategy/generate_signals.py
+src/utils/io.py

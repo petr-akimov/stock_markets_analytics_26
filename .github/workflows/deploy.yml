@@ -1,0 +1,103 @@
+name: Deploy Yandex Serverless Container Manually
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      # 1. Загружаем код репозитория
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      # 2. Настраиваем Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.1
+
+      # 3. Запускаем Terraform для создания инфраструктуры
+      - name: Terraform Init and Apply
+        env:
+          TF_VAR_yc_token: ${{ secrets.YC_TOKEN }}
+          TF_VAR_yc_cloud_id: ${{ secrets.YC_CLOUD_ID }}
+          TF_VAR_yc_folder_id: ${{ secrets.YC_FOLDER_ID }}
+        run: |
+          cd tf-bootstrap
+          terraform init
+          terraform apply -auto-approve
+
+      # 4. Извлекаем outputs из Terraform (registry_id и sa_id)
+      - name: Get Terraform Outputs
+        id: tf-outputs
+        run: |
+          cd tf-bootstrap
+          REGISTRY_ID=$(terraform output -raw registry_id)
+          SA_ID=$(terraform output -raw sa_id)
+
+          echo "registry_id=$REGISTRY_ID" >> $GITHUB_OUTPUT
+          echo "sa_id=$SA_ID" >> $GITHUB_OUTPUT
+
+      # 5. Устанавливаем Yandex Cloud CLI
+      - name: Install Yandex Cloud CLI
+        run: |
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+          echo "$HOME/yandex-cloud/bin" >> $GITHUB_PATH
+
+      # 6. Конфигурируем YC CLI, логинимся в YCR и сохраняем IAM-токен для деплоя
+      - name: Configure YC CLI and Login to YCR
+        id: login-ycr
+        env:
+          YC_TOKEN: ${{ secrets.YC_TOKEN }}
+          YC_CLOUD_ID: ${{ secrets.YC_CLOUD_ID }}
+          YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+        run: |
+          yc config set token "$YC_TOKEN"
+          yc config set cloud-id "$YC_CLOUD_ID"
+          yc config set folder-id "$YC_FOLDER_ID"
+          
+          # Генерируем токен, сохраняем в аутпут и передаем в docker login
+          IAM_TOKEN=$(yc iam create-token)
+          echo "iam_token=$IAM_TOKEN" >> $GITHUB_OUTPUT
+          echo "$IAM_TOKEN" | docker login cr.yandex -u iam --password-stdin
+
+      # 7. Собираем и пушим Docker-образ из корневой директории
+      - name: Build, tag, and push image to Yandex Cloud Container Registry
+        env:
+          CR_REGISTRY_ID: ${{ steps.tf-outputs.outputs.registry_id }}
+          CR_REPOSITORY: my-nginx-container
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t cr.yandex/$CR_REGISTRY_ID/$CR_REPOSITORY:$IMAGE_TAG .
+          docker push cr.yandex/$CR_REGISTRY_ID/$CR_REPOSITORY:$IMAGE_TAG
+
+      # 8. Деплоим через IAM-токен и указываем сервисный аккаунт для скачивания приватного образа
+      - name: Deploy Serverless Container
+        id: deploy-sls-container
+        uses: yc-actions/yc-sls-container-deploy@v5
+        with:
+          yc-iam-token: ${{ steps.login-ycr.outputs.iam_token }}
+          container-name: otus-nginx-container
+          folder-id: ${{ secrets.YC_FOLDER_ID }}
+          public: true
+          revision-service-account-id: ${{ steps.tf-outputs.outputs.sa_id }} # 👈 добавили сервисный аккаунт для скачивания образов
+          revision-cores: 4
+          revision-memory: 4096Mb
+          revision-core-fraction: 100
+          revision-concurrency: 8
+          revision-image-url: cr.yandex/${{ steps.tf-outputs.outputs.registry_id }}/my-nginx-container:${{ github.sha }}
+          revision-execution-timeout: 300
+          
+      # 9. Выводим готовую ссылку на приложение в лог GHA
+      - name: Print Application URL
+        run: |
+          CONTAINER_ID="${{ steps.deploy-sls-container.outputs.id }}"
+          echo "===================================================="
+          echo "🚀 Serverless Container успешно развернут!"
+          echo "🌐 URL для доступа: https://${CONTAINER_ID}.containers.yandexcloud.net"
+          echo "===================================================="          

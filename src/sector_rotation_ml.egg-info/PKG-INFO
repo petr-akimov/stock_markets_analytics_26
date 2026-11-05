@@ -1,0 +1,115 @@
+Metadata-Version: 2.4
+Name: sector-rotation-ml
+Version: 0.1.0
+Summary: Machine Learning Strategy for US Sector Rotation ETF using Yahoo Finance
+License: MIT
+Requires-Python: >=3.14
+Description-Content-Type: text/markdown
+Requires-Dist: pandas>=2.2.0
+Requires-Dist: numpy>=1.26.0
+Requires-Dist: matplotlib>=3.8.0
+Requires-Dist: plotly>=5.19.0
+Requires-Dist: seaborn>=0.13.0
+Requires-Dist: yfinance>=0.2.36
+Requires-Dist: ta>=0.11.0
+Requires-Dist: scikit-learn>=1.5.0
+Requires-Dist: statsmodels>=0.14.1
+Requires-Dist: sqlalchemy>=2.0.29
+Requires-Dist: python-dotenv>=1.0.1
+Requires-Dist: typer>=0.9.0
+Requires-Dist: pydantic>=2.6.0
+Requires-Dist: joblib>=1.3.0
+Requires-Dist: xgboost>=2.0.0
+Requires-Dist: lightgbm>=4.3.0
+Requires-Dist: pyarrow>=26.0.0
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0.0; extra == "dev"
+Requires-Dist: ruff>=0.4.0; extra == "dev"
+Requires-Dist: black>=24.4.0; extra == "dev"
+Requires-Dist: pre-commit>=3.6.0; extra == "dev"
+
+# Sector Rotation Strategy with Machine Learning
+
+A machine learning-driven quantitative trading framework designed to implement an algorithmic sector rotation strategy across US sector ETFs (`XLK`, `XLF`, `XLV`, `XLE`, `XLI`, `XLP`, `XLY`, `XLU`, `XLB`, `XLRE`, `XLC`) using `yfinance`.
+
+---
+
+## Project Overview
+
+The objective of this project is to build an end-to-end algorithmic trading workflow that dynamically rotates capital into the top-performing US economic sector ETFs based on Machine Learning predictions.
+
+### Key Pipeline Components:
+1. **Data Ingestion**: Automated ingestion of historical daily market data via `yfinance` into Parquet and SQLite storage.
+2. **Feature Engineering**: Multi-period momentum indicators (1M, 3M, 6M), technical indicators (RSI, MACD, Moving Averages), and volatility metrics.
+3. **Machine Learning Modeling**: Predictive classification and regression models (Random Forest, XGBoost) trained via time-series cross-validation (`TimeSeriesSplit`).
+4. **Signal Generation**: Top-K relative ranking algorithm selecting the top $K$ sectors for equal-weighted portfolio allocation.
+5. **Backtesting Engine**: Vectorized and event-driven backtesting simulating transaction fees, slippage, rebalancing frequency, and performance benchmarking against the broad S&P 500 index (`SPY`).
+6. **Automation & MLOps**: Modular code structure with Makefile commands, Docker support, and GitHub Actions workflow execution.
+
+---
+
+##️ Repository Structure
+
+```text
+sector-rotation-ml/
+├── .github/
+│   └── workflows/
+│       ├── ci.yml                  # CI: Linting (Ruff/Black) and pytest execution
+│       └── run_pipeline.yml        # Scheduled pipeline execution via GitHub Actions
+├── docker/
+│   └── Dockerfile                  # Containerization image based on Python 3.14
+├── data/                           # Data storage (gitignored)
+│   ├── raw/
+│   ├── processed/
+│   ├── analytics/
+│   ├── signals/
+│   └── backtests/
+├── models/                         # Saved machine learning artifacts (.joblib, .json)
+├── notebooks/                      # Exploratory research and prototyping notebooks
+├── reports/                        # Visual plots and summary markdown reports
+├── src/                            # Main source code package
+│   ├── config.py                   # Central settings and environment variables
+│   ├── data/                       # Ingestion module
+│   ├── features/                   # Technical indicator and target engineering
+│   ├── models/                     # Model architecture and trainer modules
+│   ├── strategy/                   # Signal ranking algorithms
+│   ├── backtest/                   # Simulation metrics and backtesters
+│   ├── app/                        # CLI workflow orchestrators
+│   └── utils/                      # Database and file I/O utilities
+├── tests/                          # Unit test suite
+├── Makefile                        # Command shortcut runners
+├── pyproject.toml                  # Python package specifications and tool configs
+├── requirements.txt                # Dependency list
+└── README.md                       # Project documentation
+```
+
+## Getting Started
+
+### Prerequisites
+- **Python 3.14** or higher
+- **Virtual Environment** tool (`venv`)
+- **Docker** (optional, for containerized execution)
+
+---
+
+### Local Setup Instructions
+
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/your-username/sector-rotation-ml.git](https://github.com/your-username/sector-rotation-ml.git)
+   cd sector-rotation-ml
+   ```
+
+2. **Initialize Environment and Install Dependencies:**
+
+```
+make setup
+```
+(Creates a .venv directory, upgrades pip, installs the package in editable mode with development extras, and sets up pre-commit hooks).
+
+3. **Configure Environment Variables:**
+
+Copy the example environment template and adjust settings as needed:
+```
+cp .env.example .env
+```
